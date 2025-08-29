@@ -6,17 +6,19 @@ import AvailableTables from './AvailableTables';
 import StatsPanel from './StatsPanel';
 import CheckoutModal from './CheckoutModal';
 import ReturnModal from './ReturnModal';
+import AddTableModal from './AddTableModal';
 
 const Dashboard = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [returnModalOpen, setReturnModalOpen] = useState(false);
+  const [addTableModalOpen, setAddTableModalOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState(null);
   const [selectedCheckout, setSelectedCheckout] = useState(null);
   
   const { activeCheckouts, overdueCheckouts, stats, loading: checkoutsLoading, error: checkoutsError, refresh: refreshCheckouts, createCheckout, returnCheckout } = useCheckouts(refreshTrigger);
   
-  const { tables, loading: tablesLoading, error: tablesError, refresh: refreshTables } = useTables({ available: false });
+  const { tables, loading: tablesLoading, error: tablesError, refresh: refreshTables, createTable } = useTables({ available: false });
 
   const availableTables = tables.filter(table => table.status === 'available');
 
@@ -57,6 +59,16 @@ const Dashboard = () => {
       await returnCheckout(selectedCheckout.id, returnData);
       setReturnModalOpen(false);
       setSelectedCheckout(null);
+      refreshTables();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleAddTableSubmit = async (tableData) => {
+    try {
+      await createTable(tableData);
+      setAddTableModalOpen(false);
       refreshTables();
     } catch (error) {
       throw error;
@@ -116,6 +128,12 @@ const Dashboard = () => {
               >
                 Refresh
               </button>
+              <button
+                onClick={() => setAddTableModalOpen(true)}
+                className="btn-primary"
+              >
+                Add Table
+              </button>
             </div>
           </div>
         </div>
@@ -161,6 +179,13 @@ const Dashboard = () => {
             setSelectedCheckout(null);
           }}
           onSubmit={handleReturnSubmit}
+        />
+      )}
+
+      {addTableModalOpen && (
+        <AddTableModal
+          onClose={() => setAddTableModalOpen(false)}
+          onSubmit={handleAddTableSubmit}
         />
       )}
     </div>

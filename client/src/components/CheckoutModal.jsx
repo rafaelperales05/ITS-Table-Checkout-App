@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { organizationsApi } from '../services/api';
+import { isValidOrganization, findSimilarOrganizations } from '../data/utOrganizations';
 
 const CheckoutModal = ({ table, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -34,27 +35,61 @@ const CheckoutModal = ({ table, onClose, onSubmit }) => {
     setMatches([]);
     setShowConfirmation(false);
     
-    if (value.length >= 3) {
-      try {
-        const response = await organizationsApi.validateCheckout(value);
-        setValidation(response.data);
+    if (value.length >= 2) {
+      // Check if organization is in our UT orgs list
+      const isValid = isValidOrganization(value);
+      const suggestions = findSimilarOrganizations(value);
+      
+      if (isValid) {
+        // Exact match found in UT orgs list
+        setValidation({ allowed: true, message: 'Valid UT organization' });
         
-        if (response.data.matches) {
-          setMatches(response.data.matches);
+        // Still check backend for existing checkout validation
+        try {
+          const response = await organizationsApi.validateCheckout(value);
+          if (!response.data.allowed) {
+            setValidation(response.data);
+          }
+        } catch (err) {
+          console.error('Backend validation error:', err);
         }
-        
-        if (response.data.confirmedOrganization) {
-          setFormData(prev => ({
-            ...prev,
-            organizationId: response.data.confirmedOrganization.id,
-          }));
+      } else if (suggestions.length > 0) {
+        // Show UT org suggestions
+        setMatches(suggestions.map(name => ({ 
+          organization: { officialName: name, id: null, category: 'UT Organization' }, 
+          score: 85 
+        })));
+        setValidation({ 
+          allowed: false, 
+          message: 'Organization not found in UT directory. Please select from suggestions or verify the name.' 
+        });
+      } else if (value.length >= 3) {
+        // No UT org match, but check backend for existing orgs
+        try {
+          const response = await organizationsApi.validateCheckout(value);
+          setValidation(response.data);
+          
+          if (response.data.matches) {
+            setMatches(response.data.matches);
+          }
+          
+          if (response.data.confirmedOrganization) {
+            setFormData(prev => ({
+              ...prev,
+              organizationId: response.data.confirmedOrganization.id,
+            }));
+          }
+          
+          if (response.data.requireConfirmation) {
+            setShowConfirmation(true);
+          }
+        } catch (err) {
+          console.error('Validation error:', err);
+          setValidation({ 
+            allowed: false, 
+            message: 'Organization not found in UT directory. Please verify the organization name.' 
+          });
         }
-        
-        if (response.data.requireConfirmation) {
-          setShowConfirmation(true);
-        }
-      } catch (err) {
-        console.error('Validation error:', err);
       }
     }
   };
