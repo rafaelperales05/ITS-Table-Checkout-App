@@ -63,3 +63,6 @@ debug_page_source.html
 # Removed scraper-related files
 # .wdm/
 # clubs_data.txt
+
+# Claude context file (contains sensitive info)
+CLAUDE_CONTEXT.md
