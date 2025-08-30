@@ -2,19 +2,20 @@
   "version": 2,
   "buildCommand": "yarn build",
   "outputDirectory": "client/build",
-  "functions": {
-    "server/index.js": {
-      "maxDuration": 30
-    }
-  },
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/(.*)",
-      "destination": "/server/index.js"
+      "src": "server/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/client/build/$1"
+      "src": "/(.*)",
+      "dest": "/client/build/$1"
     }
   ]
 }
