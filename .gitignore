@@ -66,4 +66,5 @@ debug_page_source.html
 
 # Claude context file (contains sensitive info)
 CLAUDE_CONTEXT.md
+DEPLOYMENT_README.md
 .env
