@@ -1,7 +1,7 @@
 import React from 'react';
-import { TableCellsIcon, MapPinIcon, UsersIcon } from '@heroicons/react/24/outline';
+import { TableCellsIcon, MapPinIcon, UsersIcon, PencilIcon } from '@heroicons/react/24/outline';
 
-const TableCard = ({ table, onQuickCheckout }) => {
+const TableCard = ({ table, onQuickCheckout, onEditTable }) => {
   return (
     <div className="card hover:shadow-lg transition-shadow">
       <div className="card-body">

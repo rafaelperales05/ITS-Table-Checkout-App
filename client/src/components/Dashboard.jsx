@@ -7,8 +7,10 @@ import StatsPanel from './StatsPanel';
 import CheckoutModal from './CheckoutModal';
 import ReturnModal from './ReturnModal';
 import AddTableModal from './AddTableModal';
+import OrganizationManagement from './OrganizationManagement';
 
 const Dashboard = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [returnModalOpen, setReturnModalOpen] = useState(false);
@@ -140,24 +142,59 @@ const Dashboard = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <StatsPanel stats={stats} />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-          <div>
-            <ActiveCheckouts
-              checkouts={activeCheckouts}
-              overdueCheckouts={overdueCheckouts}
-              onReturnClick={handleReturnClick}
-            />
-          </div>
-          
-          <div>
-            <AvailableTables
-              tables={availableTables}
-              onQuickCheckout={handleQuickCheckout}
-            />
-          </div>
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200 mb-8">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'dashboard'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab('organizations')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'organizations'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Organization Management
+            </button>
+          </nav>
         </div>
+
+        {/* Tab Content */}
+        {activeTab === 'dashboard' && (
+          <>
+            <StatsPanel stats={stats} />
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+              <div>
+                <ActiveCheckouts
+                  checkouts={activeCheckouts}
+                  overdueCheckouts={overdueCheckouts}
+                  onReturnClick={handleReturnClick}
+                />
+              </div>
+              
+              <div>
+                <AvailableTables
+                  tables={availableTables}
+                  onQuickCheckout={handleQuickCheckout}
+                />
+              </div>
+            </div>
+          </>
+        )}
+
+        {activeTab === 'organizations' && (
+          <OrganizationManagement />
+        )}
       </div>
 
       {checkoutModalOpen && (

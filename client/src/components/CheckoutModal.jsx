@@ -44,11 +44,17 @@ const CheckoutModal = ({ table, onClose, onSubmit }) => {
         // Exact match found in UT orgs list
         setValidation({ allowed: true, message: 'Valid UT organization' });
         
-        // Still check backend for existing checkout validation
+        // Still check backend for existing checkout validation and ban status
         try {
           const response = await organizationsApi.validateCheckout(value);
           if (!response.data.allowed) {
             setValidation(response.data);
+          } else if (response.data.confirmedOrganization?.status === 'banned') {
+            setValidation({ 
+              allowed: false, 
+              message: `Organization is banned: ${response.data.confirmedOrganization.banReason || 'Policy violation'}`,
+              bannedOrganization: response.data.confirmedOrganization
+            });
           }
         } catch (err) {
           console.error('Backend validation error:', err);
@@ -169,10 +175,22 @@ const CheckoutModal = ({ table, onClose, onSubmit }) => {
                 <div className="flex items-start space-x-2">
                   <ExclamationTriangleIcon className="w-5 h-5 text-red-500 mt-0.5" />
                   <div className="text-sm text-red-700">
+                    {validation.bannedOrganization && (
+                      <div className="mb-2">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                          BANNED ORGANIZATION
+                        </span>
+                      </div>
+                    )}
                     {validation.message}
                     {validation.activeCheckout && (
                       <div className="mt-1">
                         Currently has Table {validation.activeCheckout.Table?.tableNumber} checked out.
+                      </div>
+                    )}
+                    {validation.bannedOrganization?.banDate && (
+                      <div className="mt-1 text-xs">
+                        Banned on: {new Date(validation.bannedOrganization.banDate).toLocaleDateString()}
                       </div>
                     )}
                   </div>
