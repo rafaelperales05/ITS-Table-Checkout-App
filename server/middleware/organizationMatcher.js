@@ -49,11 +49,8 @@ class OrganizationMatcher {
       const variations = this.generateCommonVariations(inputName);
       const normalizedInput = this.normalizeString(inputName);
       
-      const organizations = await Organization.findAll({
-        where: {
-          status: 'active',
-        },
-      });
+      // Find ALL organizations (active + banned) to properly detect banned ones
+      const organizations = await Organization.findAll();
       
       const matches = [];
       
@@ -156,6 +153,17 @@ class OrganizationMatcher {
       const exactMatch = matches.find(match => match.score >= this.exactMatchThreshold);
       
       if (exactMatch) {
+        // Check if organization is banned
+        if (exactMatch.organization.status === 'banned') {
+          return {
+            allowed: false,
+            matches: [exactMatch],
+            confirmedOrganization: exactMatch.organization,
+            bannedOrganization: exactMatch.organization,
+            message: `Organization "${exactMatch.organization.officialName}" is banned: ${exactMatch.organization.banReason || 'Policy violation'}`,
+          };
+        }
+        
         const activeCheckout = await this.checkActiveCheckout(exactMatch.organization.id);
         
         if (activeCheckout) {
