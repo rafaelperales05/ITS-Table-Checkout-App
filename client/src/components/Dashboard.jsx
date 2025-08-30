@@ -7,6 +7,7 @@ import StatsPanel from './StatsPanel';
 import CheckoutModal from './CheckoutModal';
 import ReturnModal from './ReturnModal';
 import AddTableModal from './AddTableModal';
+import EditTableModal from './EditTableModal';
 import OrganizationManagement from './OrganizationManagement';
 
 const Dashboard = () => {
@@ -15,12 +16,14 @@ const Dashboard = () => {
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [returnModalOpen, setReturnModalOpen] = useState(false);
   const [addTableModalOpen, setAddTableModalOpen] = useState(false);
+  const [editTableModalOpen, setEditTableModalOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState(null);
   const [selectedCheckout, setSelectedCheckout] = useState(null);
+  const [editingTable, setEditingTable] = useState(null);
   
   const { activeCheckouts, overdueCheckouts, stats, loading: checkoutsLoading, error: checkoutsError, refresh: refreshCheckouts, createCheckout, returnCheckout } = useCheckouts(refreshTrigger);
   
-  const { tables, loading: tablesLoading, error: tablesError, refresh: refreshTables, createTable } = useTables({ available: false });
+  const { tables, loading: tablesLoading, error: tablesError, refresh: refreshTables, createTable, updateTable } = useTables({ available: false });
 
   const availableTables = tables.filter(table => table.status === 'available');
 
@@ -40,6 +43,11 @@ const Dashboard = () => {
   const handleReturnClick = (checkout) => {
     setSelectedCheckout(checkout);
     setReturnModalOpen(true);
+  };
+
+  const handleEditTableClick = (table) => {
+    setEditingTable(table);
+    setEditTableModalOpen(true);
   };
 
   const handleCheckoutSubmit = async (checkoutData) => {
@@ -71,6 +79,17 @@ const Dashboard = () => {
     try {
       await createTable(tableData);
       setAddTableModalOpen(false);
+      refreshTables();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleEditTableSubmit = async (tableData) => {
+    try {
+      await updateTable(editingTable.id, tableData);
+      setEditTableModalOpen(false);
+      setEditingTable(null);
       refreshTables();
     } catch (error) {
       throw error;
@@ -186,6 +205,7 @@ const Dashboard = () => {
                 <AvailableTables
                   tables={availableTables}
                   onQuickCheckout={handleQuickCheckout}
+                  onEditTable={handleEditTableClick}
                 />
               </div>
             </div>
@@ -223,6 +243,17 @@ const Dashboard = () => {
         <AddTableModal
           onClose={() => setAddTableModalOpen(false)}
           onSubmit={handleAddTableSubmit}
+        />
+      )}
+
+      {editTableModalOpen && (
+        <EditTableModal
+          table={editingTable}
+          onClose={() => {
+            setEditTableModalOpen(false);
+            setEditingTable(null);
+          }}
+          onSubmit={handleEditTableSubmit}
         />
       )}
     </div>

@@ -38,19 +38,28 @@ const TableCard = ({ table, onQuickCheckout, onEditTable }) => {
             </div>
           </div>
           
-          <button
-            onClick={() => onQuickCheckout(table)}
-            className="btn-primary text-sm"
-          >
-            Quick Checkout
-          </button>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => onEditTable(table)}
+              className="btn-secondary text-sm flex items-center"
+              title="Edit table"
+            >
+              <PencilIcon className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => onQuickCheckout(table)}
+              className="btn-primary text-sm"
+            >
+              Quick Checkout
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const AvailableTables = ({ tables, onQuickCheckout }) => {
+const AvailableTables = ({ tables, onQuickCheckout, onEditTable }) => {
   return (
     <div className="card">
       <div className="card-header">
@@ -73,6 +82,7 @@ const AvailableTables = ({ tables, onQuickCheckout }) => {
                 <TableCard
                   table={table}
                   onQuickCheckout={onQuickCheckout}
+                  onEditTable={onEditTable}
                 />
               </div>
             ))}
