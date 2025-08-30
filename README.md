@@ -59,5 +59,3 @@ npm run seed
 ```bash
 npm run dev
 ```
-
-Access at http://localhost:3000

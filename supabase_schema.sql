@@ -54,11 +54,11 @@ INSERT INTO organizations (official_name, aliases, category, status, ban_reason,
 ('Texas Kickboxing Club', ARRAY['TKB','Kickboxing','Texas Kickboxing'], 'Sports', 'banned', 'Damaged equipment during last event', '2024-01-15');
 
 INSERT INTO tables (table_number, status, location, capacity) VALUES
-('T-001', 'available', 'Main Hall', 8),
-('T-002', 'available', 'Main Hall', 6),
-('T-003', 'available', 'East Wing', 10),
-('T-004', 'available', 'West Wing', 4),
-('T-005', 'available', 'Main Hall', 8);
+('FAC-001', 'available', 'Main Hall', 8),
+('FAC-002', 'available', 'Main Hall', 6),
+('FAC-003', 'available', 'East Wing', 10),
+('FAC-004', 'available', 'West Wing', 4),
+('FAC-005', 'available', 'Main Hall', 8);
 
 INSERT INTO checkouts (organization_id, table_id, checkout_time, expected_return_time, status, notes, checked_out_by) VALUES
 (1, 1, NOW(), NOW() + INTERVAL '1 day 3 hours', 'active', 'Programming workshop event', 'John Smith'),
