@@ -8,7 +8,7 @@
     "server": "cd server && npm run dev",
     "client": "cd client && npm start",
     "install-all": "npm install && cd server && npm install && cd ../client && npm install",
-    "build": "cd client && yarn install && yarn build",
+    "build": "yarn install && cd client && yarn install && yarn build && cd ../server && yarn install",
     "start": "cd server && npm start"
   },
   "keywords": [
@@ -22,6 +22,17 @@
   ],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "dotenv": "^16.3.1",
+    "sequelize": "^6.35.2",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "string-similarity": "^4.0.4",
+    "fuzzball": "^2.1.2"
+  },
   "devDependencies": {
     "concurrently": "^8.2.2"
   }
