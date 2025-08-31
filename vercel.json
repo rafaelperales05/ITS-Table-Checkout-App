@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "yarn build && cd server && yarn install",
+  "buildCommand": "npm run build",
   "outputDirectory": "client/build",
   "builds": [
     {
