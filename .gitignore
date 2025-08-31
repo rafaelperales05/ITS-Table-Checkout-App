@@ -10,7 +10,10 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.supabase
 server/.env
+server/.env.production.local
+server/.env.supabase
 
 # Python (removed since we're not using scraper)
 # __pycache__/
@@ -59,6 +62,10 @@ clubs_data.ndjson
 *.tmp
 *.temp
 debug_page_source.html
+
+# Temporary test files
+server/test-db.js
+server/test-individual.js
 
 # Removed scraper-related files
 # .wdm/
