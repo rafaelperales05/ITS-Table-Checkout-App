@@ -14,7 +14,9 @@ const checkoutsRouter = require('./routes/checkouts');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: process.env.NODE_ENV === 'production'
+}));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -59,40 +61,62 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Initialize database connection (for both dev and prod)
-async function initializeDatabase() {
-  try {
-    console.log('Testing database connection...');
-    await sequelize.authenticate();
-    console.log('Database connection established successfully.');
-    
-    // Only sync in development - use migrations in production
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Synchronizing database models...');
-      await sequelize.sync({ alter: true });
-      console.log('Database models synchronized successfully.');
-    }
-  } catch (error) {
-    console.error('Database initialization failed:', error);
-    // Don't exit in serverless environment
-    if (process.env.NODE_ENV !== 'production') {
-      process.exit(1);
-    }
+// Initialize database connection lazily
+let databaseInitialized = false;
+let initializationPromise = null;
+
+async function ensureDatabaseConnection() {
+  if (databaseInitialized) {
+    return;
   }
+  
+  if (initializationPromise) {
+    return initializationPromise;
+  }
+  
+  initializationPromise = (async () => {
+    try {
+      console.log('Testing database connection...');
+      await sequelize.authenticate();
+      console.log('Database connection established successfully.');
+      databaseInitialized = true;
+      
+      // Only sync in development - use migrations in production
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Synchronizing database models...');
+        await sequelize.sync({ alter: true });
+        console.log('Database models synchronized successfully.');
+      }
+    } catch (error) {
+      console.error('Database initialization failed:', error);
+      // Don't exit in serverless environment
+      if (process.env.NODE_ENV !== 'production') {
+        process.exit(1);
+      }
+      throw error;
+    }
+  })();
+  
+  return initializationPromise;
 }
+
+// Middleware to ensure database connection before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await ensureDatabaseConnection();
+    next();
+  } catch (error) {
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 // Only start server in development
 if (require.main === module && process.env.NODE_ENV !== 'production') {
-  initializeDatabase().then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`API available at http://localhost:${PORT}/api`);
-      console.log(`Health check at http://localhost:${PORT}/api/health`);
-    });
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`API available at http://localhost:${PORT}/api`);
+    console.log(`Health check at http://localhost:${PORT}/api/health`);
   });
-} else {
-  // Initialize database for serverless (production)
-  initializeDatabase();
 }
 
 module.exports = app;

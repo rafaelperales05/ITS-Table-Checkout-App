@@ -75,3 +75,4 @@ server/test-individual.js
 CLAUDE_CONTEXT.md
 DEPLOYMENT_README.md
 .env
+.vercel
