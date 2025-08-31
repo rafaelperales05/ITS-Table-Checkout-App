@@ -1,14 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "yarn build",
+  "buildCommand": "yarn build && cd server && yarn install",
   "outputDirectory": "client/build",
   "builds": [
     {
       "src": "server/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["client/build/**"]
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
