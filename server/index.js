@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const path = require('path');
 require('dotenv').config();
 
 const sequelize = require('./config/database');
@@ -39,38 +40,59 @@ app.get('/api', (req, res) => {
   });
 });
 
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Endpoint not found' });
-});
+// Serve static files from React app build
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')));
+  
+  // Catch all handler: send back React's index.html file
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+  });
+} else {
+  app.use('*', (req, res) => {
+    res.status(404).json({ error: 'Endpoint not found' });
+  });
+}
 
 app.use((error, req, res, next) => {
   console.error('Unhandled error:', error);
   res.status(500).json({ error: 'Internal server error' });
 });
 
-async function startServer() {
+// Initialize database connection (for both dev and prod)
+async function initializeDatabase() {
   try {
     console.log('Testing database connection...');
     await sequelize.authenticate();
     console.log('Database connection established successfully.');
     
-    console.log('Synchronizing database models...');
-    await sequelize.sync({ alter: true });
-    console.log('Database models synchronized successfully.');
-    
+    // Only sync in development - use migrations in production
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Synchronizing database models...');
+      await sequelize.sync({ alter: true });
+      console.log('Database models synchronized successfully.');
+    }
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+    // Don't exit in serverless environment
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
+  }
+}
+
+// Only start server in development
+if (require.main === module && process.env.NODE_ENV !== 'production') {
+  initializeDatabase().then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`API available at http://localhost:${PORT}/api`);
       console.log(`Health check at http://localhost:${PORT}/api/health`);
     });
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
-}
-
-if (require.main === module) {
-  startServer();
+  });
+} else {
+  // Initialize database for serverless (production)
+  initializeDatabase();
 }
 
 module.exports = app;
