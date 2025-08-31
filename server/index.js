@@ -61,62 +61,37 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Initialize database connection lazily
-let databaseInitialized = false;
-let initializationPromise = null;
-
-async function ensureDatabaseConnection() {
-  if (databaseInitialized) {
-    return;
-  }
-  
-  if (initializationPromise) {
-    return initializationPromise;
-  }
-  
-  initializationPromise = (async () => {
-    try {
-      console.log('Testing database connection...');
-      await sequelize.authenticate();
-      console.log('Database connection established successfully.');
-      databaseInitialized = true;
-      
-      // Only sync in development - use migrations in production
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Synchronizing database models...');
-        await sequelize.sync({ alter: true });
-        console.log('Database models synchronized successfully.');
-      }
-    } catch (error) {
-      console.error('Database initialization failed:', error);
-      // Don't exit in serverless environment
-      if (process.env.NODE_ENV !== 'production') {
-        process.exit(1);
-      }
-      throw error;
+async function startServer() {
+  try {
+    console.log('Testing database connection...');
+    await sequelize.authenticate();
+    console.log('Database connection established successfully.');
+    
+    // Only sync in development - use migrations in production
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Synchronizing database models...');
+      await sequelize.sync({ alter: true });
+      console.log('Database models synchronized successfully.');
     }
-  })();
-  
-  return initializationPromise;
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 }
 
-// Middleware to ensure database connection before handling requests
-app.use(async (req, res, next) => {
-  try {
-    await ensureDatabaseConnection();
-    next();
-  } catch (error) {
-    res.status(500).json({ error: 'Database connection failed' });
-  }
-});
-
-// Only start server in development
-if (require.main === module && process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`API available at http://localhost:${PORT}/api`);
-    console.log(`Health check at http://localhost:${PORT}/api/health`);
+// Start server when run directly (not when imported)
+if (require.main === module) {
+  console.log(`Starting server in ${process.env.NODE_ENV || 'development'} mode...`);
+  startServer().then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log(`API available at http://localhost:${PORT}/api`);
+      console.log(`Health check at http://localhost:${PORT}/api/health`);
+    });
   });
+} else {
+  // For serverless (production) - initialize database
+  startServer();
 }
 
 module.exports = app;

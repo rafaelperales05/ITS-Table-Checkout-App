@@ -63,7 +63,9 @@ clubs_data.ndjson
 *.temp
 debug_page_source.html
 
-# Temporary test files
+# Test connection files
+test-connection.js
+test-env-connection.js
 server/test-db.js
 server/test-individual.js
 
