@@ -16,10 +16,10 @@ if (process.env.DATABASE_URL) {
       } : false
     },
     pool: {
-      max: 5,
+      max: 1, // Serverless - use minimal connections
       min: 0,
-      acquire: 30000,
-      idle: 10000,
+      acquire: 10000, // Reduced timeout for serverless
+      idle: 5000,
     },
   });
 } else {
@@ -33,10 +33,10 @@ if (process.env.DATABASE_URL) {
     dialect: 'postgres',
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
     pool: {
-      max: 5,
+      max: 1, // Serverless - use minimal connections
       min: 0,
-      acquire: 30000,
-      idle: 10000,
+      acquire: 10000, // Reduced timeout for serverless
+      idle: 5000,
     },
   });
 }

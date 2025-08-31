@@ -90,8 +90,10 @@ if (require.main === module) {
     });
   });
 } else {
-  // For serverless (production) - initialize database
-  startServer();
+  // For serverless (production) - initialize database without starting server
+  startServer().catch(error => {
+    console.error('Serverless initialization failed:', error);
+  });
 }
 
 module.exports = app;
