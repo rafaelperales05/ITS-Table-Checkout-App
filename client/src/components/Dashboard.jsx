@@ -25,7 +25,7 @@ const Dashboard = () => {
   
   const { tables, loading: tablesLoading, error: tablesError, refresh: refreshTables, createTable, updateTable } = useTables({ available: false });
 
-  const availableTables = tables.filter(table => table.status === 'available');
+  const availableTables = Array.isArray(tables) ? tables.filter(table => table.status === 'available') : [];
 
   useEffect(() => {
     const interval = setInterval(() => {

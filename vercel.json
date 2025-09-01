@@ -1,29 +1,12 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build",
-  "installCommand": "npm install && cd server && npm install",
+  "buildCommand": "npm run build", 
+  "installCommand": "npm install && cd server && npm install && cd ..",
   "outputDirectory": "client/build",
   "devCommand": "npm run dev",
-  "builds": [
+  "rewrites": [
     {
-      "src": "server/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["server/**", "node_modules/**"]
-      }
+      "source": "/api/(.*)",
+      "destination": "/server/index.js"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/server/index.js"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }

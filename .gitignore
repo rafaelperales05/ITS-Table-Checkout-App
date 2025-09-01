@@ -10,7 +10,8 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-.env.supabase
+.env.supabase 
+.env*
 server/.env
 server/.env.production.local
 server/.env.supabase
