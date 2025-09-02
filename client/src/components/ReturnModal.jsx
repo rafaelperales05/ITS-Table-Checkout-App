@@ -50,15 +50,15 @@ const ReturnModal = ({ checkout, onClose, onSubmit }) => {
               <div className="flex justify-between">
                 <span className="text-sm font-medium text-gray-600">Organization:</span>
                 <span className="text-sm text-gray-900">
-                  {checkout.Organization.officialName}
+                  {checkout.Organization?.officialName || 'Unknown Organization'}
                 </span>
               </div>
               
               <div className="flex justify-between">
                 <span className="text-sm font-medium text-gray-600">Table:</span>
                 <span className="text-sm text-gray-900">
-                  {checkout.Table.tableNumber}
-                  {checkout.Table.location && ` (${checkout.Table.location})`}
+                  {checkout.Table?.tableNumber || 'Unknown Table'}
+                  {checkout.Table?.location && ` (${checkout.Table.location})`}
                 </span>
               </div>
               
