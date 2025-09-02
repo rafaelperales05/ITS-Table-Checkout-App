@@ -15,7 +15,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === 'production'
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "connect-src": ["'self'", "http://localhost:5000", "https://*.vercel.app"]
+    }
+  } : false
 }));
 app.use(cors());
 app.use(express.json());

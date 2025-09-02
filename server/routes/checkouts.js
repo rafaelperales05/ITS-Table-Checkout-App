@@ -24,8 +24,8 @@ router.get('/', async (req, res) => {
     const checkouts = await Checkout.findAndCountAll({
       where,
       include: [
-        { model: Organization },
-        { model: Table },
+        { model: Organization, required: false },
+        { model: Table, required: false },
       ],
       order: [['checkoutTime', 'DESC']],
       limit: parseInt(limit),
@@ -46,19 +46,25 @@ router.get('/', async (req, res) => {
 
 router.get('/active', async (req, res) => {
   try {
+    console.log('Fetching active checkouts...');
+    
     const activeCheckouts = await Checkout.findAll({
       where: { status: 'active' },
       include: [
-        { model: Organization },
-        { model: Table },
+        { model: Organization, required: false },
+        { model: Table, required: false },
       ],
       order: [['checkoutTime', 'DESC']],
     });
     
+    console.log(`Found ${activeCheckouts.length} active checkouts`);
+    console.log('Sample checkout data:', JSON.stringify(activeCheckouts[0], null, 2));
+    
     res.json(activeCheckouts);
   } catch (error) {
     console.error('Error fetching active checkouts:', error);
-    res.status(500).json({ error: 'Failed to fetch active checkouts' });
+    console.error('Stack trace:', error.stack);
+    res.status(500).json({ error: 'Failed to fetch active checkouts', details: error.message });
   }
 });
 
@@ -70,8 +76,8 @@ router.get('/overdue', async (req, res) => {
         expectedReturnTime: { [Op.lt]: new Date() },
       },
       include: [
-        { model: Organization },
-        { model: Table },
+        { model: Organization, required: false },
+        { model: Table, required: false },
       ],
       order: [['expectedReturnTime', 'ASC']],
     });
