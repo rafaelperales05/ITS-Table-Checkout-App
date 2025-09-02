@@ -5,7 +5,7 @@ require('dotenv').config();
 let sequelize;
 
 if (process.env.DATABASE_URL) {
-  // Production: use DATABASE_URL (Railway, Supabase, Neon, etc.)
+  // Production: use DATABASE_URL 
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
