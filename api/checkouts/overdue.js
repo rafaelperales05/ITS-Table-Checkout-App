@@ -50,4 +50,4 @@ const handler = async (req, res) => {
   }
 };
 
-module.exports = createHandler(handler);
+module.exports = createHandler(handler, 'checkouts-overdue');

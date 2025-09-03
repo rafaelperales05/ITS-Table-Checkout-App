@@ -1,21 +1,10 @@
 // GET /api/health - Health check endpoint (no database required)
+const { createHandler } = require('../lib/serverless-handler');
 
-export default function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
+const handler = async (req, res) => {
   // Only allow GET method
   if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   // Return health status
@@ -24,4 +13,6 @@ export default function handler(req, res) {
     timestamp: new Date().toISOString(),
     service: 'ITS Table Checkout API'
   });
-}
+};
+
+module.exports = createHandler(handler, 'health-check');
