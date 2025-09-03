@@ -66,6 +66,9 @@ const Dashboard = () => {
 
   const handleReturnSubmit = async (returnData) => {
     try {
+      if (!selectedCheckout?.id) {
+        throw new Error('No checkout selected or checkout ID is missing');
+      }
       await returnCheckout(selectedCheckout.id, returnData);
       setReturnModalOpen(false);
       setSelectedCheckout(null);
