@@ -183,7 +183,7 @@ const CheckoutModal = ({ table, onClose, onSubmit }) => {
                       </div>
                     )}
                     {validation.message}
-                    {validation.activeCheckout && (
+                    {validation.activere && (
                       <div className="mt-1">
                         Currently has Table {validation.activeCheckout.Table?.tableNumber} checked out.
                       </div>

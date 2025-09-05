@@ -23,7 +23,7 @@ const Dashboard = () => {
   
   const { activeCheckouts, overdueCheckouts, stats, loading: checkoutsLoading, error: checkoutsError, refresh: refreshCheckouts, createCheckout, returnCheckout } = useCheckouts(refreshTrigger);
   
-  const { tables, loading: tablesLoading, error: tablesError, refresh: refreshTables, createTable, updateTable } = useTables({ available: false });
+  const { tables, loading: tablesLoading, error: tablesError, refresh: refreshTables, createTable, updateTable } = useTables({ available: true });
 
   const availableTables = Array.isArray(tables) ? tables.filter(table => table.status === 'available') : [];
 
