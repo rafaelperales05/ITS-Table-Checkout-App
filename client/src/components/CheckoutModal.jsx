@@ -130,7 +130,8 @@ const CheckoutModal = ({ table, onClose, onSubmit }) => {
     try {
       await onSubmit(formData);
     } catch (err) {
-      setError(err.message);
+      console.error('Checkout error:', err);
+      setError(err.message || err.toString() || 'Failed to create checkout');
     } finally {
       setLoading(false);
     }
