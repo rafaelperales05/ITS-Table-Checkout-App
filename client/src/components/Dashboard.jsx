@@ -23,7 +23,7 @@ const Dashboard = () => {
   
   const { activeCheckouts, overdueCheckouts, stats, loading: checkoutsLoading, error: checkoutsError, refresh: refreshCheckouts, createCheckout, returnCheckout } = useCheckouts(refreshTrigger);
   
-  const { tables, loading: tablesLoading, error: tablesError, refresh: refreshTables, createTable, updateTable } = useTables({ available: false });
+  const { tables, loading: tablesLoading, error: tablesError, refresh: refreshTables, createTable, updateTable } = useTables({ available: true });
 
   const availableTables = Array.isArray(tables) ? tables.filter(table => table.status === 'available') : [];
 
@@ -66,6 +66,9 @@ const Dashboard = () => {
 
   const handleReturnSubmit = async (returnData) => {
     try {
+      if (!selectedCheckout?.id) {
+        throw new Error('No checkout selected or checkout ID is missing');
+      }
       await returnCheckout(selectedCheckout.id, returnData);
       setReturnModalOpen(false);
       setSelectedCheckout(null);

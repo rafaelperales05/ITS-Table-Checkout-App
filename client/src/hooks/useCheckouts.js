@@ -17,8 +17,12 @@ export const useCheckouts = (refresh = false) => {
         checkoutsApi.getStats(),
       ]);
 
-      setActiveCheckouts(activeRes.data);
-      setOverdueCheckouts(overdueRes.data);
+      // Handle paginated response from serverless endpoints
+      const activeData = activeRes.data.data || activeRes.data;
+      const overdueData = overdueRes.data.data || overdueRes.data;
+      
+      setActiveCheckouts(Array.isArray(activeData) ? activeData : []);
+      setOverdueCheckouts(Array.isArray(overdueData) ? overdueData : []);
       setStats(statsRes.data);
       setError(null);
     } catch (err) {

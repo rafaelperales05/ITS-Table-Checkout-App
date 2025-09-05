@@ -10,7 +10,9 @@ export const useOrganizations = (params = {}) => {
     try {
       setLoading(true);
       const response = await organizationsApi.getAll(params);
-      setOrganizations(response.data.organizations || response.data);
+      // Handle paginated response from serverless endpoint
+      const organizationsData = response.data.data || response.data.organizations || response.data;
+      setOrganizations(Array.isArray(organizationsData) ? organizationsData : []);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to fetch organizations');

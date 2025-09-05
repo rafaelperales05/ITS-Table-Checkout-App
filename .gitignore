@@ -74,8 +74,9 @@ server/test-individual.js
 # .wdm/
 # clubs_data.txt
 
-# Claude context file (contains sensitive info)
+# Claude context files (contains sensitive info)
 CLAUDE_CONTEXT.md
+CLAUDE.md
 DEPLOYMENT_README.md
 .env
 .vercel

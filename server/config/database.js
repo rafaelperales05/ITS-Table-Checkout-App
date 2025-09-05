@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+const pg = require('pg');
 require('dotenv').config();
 
 // Support both individual params (development) and DATABASE_URL (production)
@@ -8,6 +9,7 @@ if (process.env.DATABASE_URL) {
   // Production: use DATABASE_URL 
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
+    dialectModule: pg, // Explicitly provide pg module for serverless
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
     dialectOptions: {
       ssl: process.env.NODE_ENV === 'production' ? {
@@ -31,6 +33,7 @@ if (process.env.DATABASE_URL) {
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'password123',
     dialect: 'postgres',
+    dialectModule: pg, // Explicitly provide pg module for serverless
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
     pool: {
       max: 1, // Serverless - use minimal connections

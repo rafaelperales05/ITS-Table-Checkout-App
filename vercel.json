@@ -1,12 +1,6 @@
 {
-  "buildCommand": "npm run build", 
-  "installCommand": "npm install && cd server && npm install && cd ..",
+  "buildCommand": "cd client && npm install && npm run build",
+  "installCommand": "npm install && cd client && npm install",
   "outputDirectory": "client/build",
-  "devCommand": "npm run dev",
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/server/index.js"
-    }
-  ]
+  "devCommand": "cd client && npm start"
 }

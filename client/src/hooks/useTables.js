@@ -10,7 +10,9 @@ export const useTables = (params = {}) => {
     try {
       setLoading(true);
       const response = await tablesApi.getAll(params);
-      setTables(response.data);
+      // Handle paginated response from serverless endpoint
+      const tablesData = response.data.data || response.data;
+      setTables(Array.isArray(tablesData) ? tablesData : []);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to fetch tables');
